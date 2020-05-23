@@ -44,7 +44,7 @@ var p_conf = Config{
 	bind_port:   "80",
 	paste_dir:   "./pastes",
 	templ_dir:   "./tmpl",
-	max_size:    4096,
+	max_size:    10000000,
 	log_file:    "./binnit.log",
 }
 
@@ -63,7 +63,7 @@ func handle_get_paste(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	orig_IP := r.RemoteAddr
 	log.Printf("Received GET from %s for  '%s'\n", orig_IP, orig_name)
 	if orig_name == "/" {
-		w.Write([]byte("<!DOCTYPE html><html><head><title>PasteBinServer</title></head><body><h1>AmosBird'sPasteBinServer</h1></body></html>"))
+		w.Write([]byte("<!DOCTYPE html><html><head><title>PasteBinServer</title></head><body><h1>Amos Bird's Pastebin Server</h1></body></html>"))
 	} else {
 		// otherwise, if the requested paste exists, we serve it...
 		content, err := paste.Retrieve(paste_name)
@@ -82,7 +82,7 @@ func handle_put_paste(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	err1 := r.ParseForm()
 	err2 := r.ParseMultipartForm(int64(2 * p_conf.max_size))
 	if err1 != nil && err2 != nil {
-		w.Write([]byte("<!DOCTYPE html><html><head><title>PasteBin Server</title></head><body><h1>AmosBird's PasteBin Server</h1></body></html>"))
+		w.Write([]byte("<!DOCTYPE html><html><head><title>PasteBin Server</title></head><body><h1>Amos Bird's Pastebin Server</h1></body></html>"))
 	} else {
 		req_body := r.PostForm
 		orig_IP := r.RemoteAddr
