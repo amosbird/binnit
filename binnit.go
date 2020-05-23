@@ -31,12 +31,14 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+    "golang.org/x/crypto/bcrypt"
 
 	auth "github.com/abbot/go-http-auth"
-	"github.com/amosbird/binnit/paste"
+	"./paste"
 )
 
 var conf_file = flag.String("c", "./binnit.cfg", "Configuration file for binnit")
+var userpass = flag.String("g", "", "Generate user password")
 
 var p_conf = Config{
 	server_name: "la.wentropy.com",
@@ -116,8 +118,8 @@ func req_handler(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func secret(user, realm string) string {
-	if user == "amos" {
-		return "$2a$10$SQqGQ2x8KG3mTp31qLCpPO8Yp2seZBksR7u0pi5bLA/0r8chmbHMK"
+	if user == "z00175780" {
+		return "$2a$10$DOBOGi64kGkJat0lY6NnuOiLYLH6JRFKeJPs17GCTa/JHV3fSa1.y"
 	}
 	return ""
 }
@@ -140,6 +142,13 @@ func Wrap(a *auth.BasicAuth, wrapped auth.AuthenticatedHandlerFunc) http.Handler
 
 func main() {
 	flag.Parse()
+	if *userpass != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*userpass), bcrypt.DefaultCost)
+		if err == nil {
+			fmt.Println(string(hashedPassword))
+		}
+		os.Exit(0)
+	}
 	parse_config(*conf_file, &p_conf)
 	f, err := os.OpenFile(p_conf.log_file, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0600)
 	if err != nil {

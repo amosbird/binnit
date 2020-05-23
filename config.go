@@ -45,7 +45,7 @@ type Config struct {
 	bind_port string
 	paste_dir string
 	templ_dir string
-	max_size uint16
+	max_size uint32
 	log_file string
 }
 
@@ -101,7 +101,7 @@ func parse_config (fname string, c *Config) error {
 						c.log_file = strings.Trim(fields[1], " \t\"")
 					case "max_size":
 						if m_size, err := strconv.ParseUint(fields[1], 10, 16); err == nil {
-							c.max_size = uint16(m_size)
+							c.max_size = uint32(m_size)
 						} else {
 							fmt.Fprintf(os.Stderr, "Invalid max_size value %s at line %d (max: 65535)\n",
 								fields[1], line)
