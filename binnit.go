@@ -41,9 +41,9 @@ var conf_file = flag.String("c", "./binnit.cfg", "Configuration file for binnit"
 var userpass = flag.String("g", "", "Generate user password")
 
 var p_conf = Config{
-	server_name: "la.wentropy.com",
+	server_name: "49.232.33.249:8765",
 	bind_addr:   "0.0.0.0",
-	bind_port:   "80",
+	bind_port:   "8765",
 	paste_dir:   "./pastes",
 	templ_dir:   "./tmpl",
 	max_size:    10000000,
@@ -65,7 +65,7 @@ func handle_get_paste(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	orig_IP := r.RemoteAddr
 	log.Printf("Received GET from %s for  '%s'\n", orig_IP, orig_name)
 	if orig_name == "/" {
-		w.Write([]byte("<!DOCTYPE html><html><head><title>PasteBinServer</title></head><body><h1>Amos Bird's Pastebin Server</h1></body></html>"))
+		w.Write([]byte("<!DOCTYPE html><html><head><title>PasteBinServer</title></head><body><h1>zjl's Pastebin Server</h1></body></html>"))
 	} else {
 		// otherwise, if the requested paste exists, we serve it...
 		content, err := paste.Retrieve(paste_name)
@@ -84,7 +84,7 @@ func handle_put_paste(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	err1 := r.ParseForm()
 	err2 := r.ParseMultipartForm(int64(2 * p_conf.max_size))
 	if err1 != nil && err2 != nil {
-		w.Write([]byte("<!DOCTYPE html><html><head><title>PasteBin Server</title></head><body><h1>Amos Bird's Pastebin Server</h1></body></html>"))
+		w.Write([]byte("<!DOCTYPE html><html><head><title>PasteBin Server</title></head><body><h1>zjl's Pastebin Server</h1></body></html>"))
 	} else {
 		req_body := r.PostForm
 		orig_IP := r.RemoteAddr
