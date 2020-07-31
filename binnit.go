@@ -37,7 +37,6 @@ import (
 	"./paste"
 )
 
-var conf_file = flag.String("c", "./binnit.cfg", "Configuration file for binnit")
 var userpass = flag.String("g", "", "Generate user password")
 
 var p_conf = Config{
@@ -118,8 +117,8 @@ func req_handler(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 }
 
 func secret(user, realm string) string {
-	if user == "z00175780" {
-		return "$2a$10$DOBOGi64kGkJat0lY6NnuOiLYLH6JRFKeJPs17GCTa/JHV3fSa1.y"
+	if user == "amos" {
+		return "$2a$10$rLY7MbjM.nz4y55yCIMIHuHf1Cse7PLs.r9yAN9HwGlGkYT4ZF6tS"
 	}
 	return ""
 }
@@ -149,7 +148,6 @@ func main() {
 		}
 		os.Exit(0)
 	}
-	parse_config(*conf_file, &p_conf)
 	f, err := os.OpenFile(p_conf.log_file, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0600)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error opening log_file: %s. Exiting\n", p_conf.log_file)
@@ -160,7 +158,6 @@ func main() {
 	log.SetPrefix("[binnit]: ")
 	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds)
 	log.Println("Binnit version 0.1 -- Starting ")
-	log.Printf("  + Config file: %s\n", *conf_file)
 	log.Printf("  + Serving pastes on: %s\n", p_conf.server_name)
 	log.Printf("  + listening on: %s:%s\n", p_conf.bind_addr, p_conf.bind_port)
 	log.Printf("  + paste_dir: %s\n", p_conf.paste_dir)
