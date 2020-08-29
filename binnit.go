@@ -40,7 +40,7 @@ import (
 var userpass = flag.String("g", "", "Generate user password")
 
 var p_conf = Config{
-	server_name: "la.wentropy.com",
+	server_name: "oracle.wentropy.com",
 	bind_addr:   "0.0.0.0",
 	bind_port:   "80",
 	paste_dir:   "./pastes",
