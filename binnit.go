@@ -31,10 +31,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-    "golang.org/x/crypto/bcrypt"
+	"strings"
 
-	auth "github.com/abbot/go-http-auth"
+	"golang.org/x/crypto/bcrypt"
+
 	"./paste"
+	auth "github.com/abbot/go-http-auth"
 )
 
 var userpass = flag.String("g", "", "Generate user password")
@@ -63,6 +65,10 @@ func handle_get_paste(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 	paste_name = p_conf.paste_dir + "/" + orig_name
 	orig_IP := r.RemoteAddr
 	log.Printf("Received GET from %s for  '%s'\n", orig_IP, orig_name)
+	if strings.HasSuffix(paste_name, ".html") {
+		paste_name = strings.TrimSuffix(paste_name, ".html")
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	}
 	if orig_name == "/" {
 		w.Write([]byte("<!DOCTYPE html><html><head><title>PasteBinServer</title></head><body><h1>Amos Bird's Pastebin Server</h1></body></html>"))
 	} else {
