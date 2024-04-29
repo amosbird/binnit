@@ -24,6 +24,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"io"
@@ -35,8 +36,8 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"./paste"
 	auth "github.com/abbot/go-http-auth"
+	"github.com/amosbird/binnit/paste"
 )
 
 var userpass = flag.String("g", "", "Generate user password")
@@ -44,7 +45,7 @@ var userpass = flag.String("g", "", "Generate user password")
 var p_conf = Config{
 	server_name: "oracle.wentropy.com",
 	bind_addr:   "0.0.0.0",
-	bind_port:   "80",
+	bind_port:   "443",
 	paste_dir:   "./pastes",
 	templ_dir:   "./tmpl",
 	max_size:    10000000,
@@ -100,10 +101,10 @@ func handle_put_paste(w http.ResponseWriter, r *auth.AuthenticatedRequest) {
 		if err == nil {
 			hostname := p_conf.server_name
 			if show := req_body.Get("show"); show != "1" {
-				fmt.Fprintf(w, "http://%s/%s\n", hostname, ID)
+				fmt.Fprintf(w, "https://%s/%s\n", hostname, ID)
 				return
 			} else {
-				fmt.Fprintf(w, "<html><body>Link: <a href='http://%s/%s'>http://%s/%s</a></body></html>",
+				fmt.Fprintf(w, "<html><body>Link: <a href='https://%s/%s'>https://%s/%s</a></body></html>",
 					hostname, ID, hostname, ID)
 				return
 			}
@@ -145,6 +146,15 @@ func Wrap(a *auth.BasicAuth, wrapped auth.AuthenticatedHandlerFunc) http.Handler
 	}
 }
 
+func getCertificate(info *tls.ClientHelloInfo) (*tls.Certificate, error) {
+	caFiles, err := tls.LoadX509KeyPair("server.crt", "server.key")
+	if err != nil {
+		return nil, err
+	}
+
+	return &caFiles, nil
+}
+
 func main() {
 	flag.Parse()
 	if *userpass != "" {
@@ -171,5 +181,13 @@ func main() {
 	log.Printf("  + max_size: %d\n", p_conf.max_size)
 	authenticator := auth.NewBasicAuthenticator(p_conf.server_name, secret)
 	http.HandleFunc("/", Wrap(authenticator, req_handler))
-	log.Fatal(http.ListenAndServe(p_conf.bind_addr+":"+p_conf.bind_port, nil))
+
+	s := &http.Server{
+		Addr: "0.0.0.0:443",
+		TLSConfig: &tls.Config{
+			GetCertificate: getCertificate,
+		},
+	}
+
+	log.Fatal(s.ListenAndServeTLS("", ""))
 }
